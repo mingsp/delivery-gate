@@ -1,0 +1,7 @@
+interface:
+  display_name: "No Negative Echo"
+  short_description: "Reduce session-history residue in final deliverables"
+  default_prompt: "Use $no-negative-echo to finalize this artifact from the accepted result and verify every user-facing surface."
+
+policy:
+  allow_implicit_invocation: true

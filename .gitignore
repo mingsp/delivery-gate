@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*.zip
+
+# Local source captures; not part of the distributable Skill.
+截屏*.png
