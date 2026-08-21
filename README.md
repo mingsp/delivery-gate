@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./no-negative-echo/assets/icon.svg" width="168" height="168" alt="No Negative Echo icon">
+  <img src="./no-negative-echo/assets/icon.png" width="168" height="168" alt="No Negative Echo icon">
 </p>
 
 <h1 align="center">No Negative Echo</h1>
@@ -173,7 +173,7 @@ python3 tests/test_scripts.py
 │   ├── agents/openai.yaml
 │   ├── assets/
 │   │   ├── icon-400.png
-│   │   └── icon.svg
+│   │   └── icon.png
 │   └── scripts/check_surface.py
 ├── scripts/install_skill.py
 └── tests/

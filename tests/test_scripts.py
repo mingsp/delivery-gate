@@ -269,7 +269,7 @@ class InstallerTests(unittest.TestCase):
             self.assertFalse(stale_reference.exists())
             self.assertTrue((old_target / "SKILL.md").is_file())
             self.assertTrue((old_target / "agents" / "openai.yaml").is_file())
-            self.assertTrue((old_target / "assets" / "icon.svg").is_file())
+            self.assertTrue((old_target / "assets" / "icon.png").is_file())
             self.assertTrue((old_target / "assets" / "icon-400.png").is_file())
             self.assertTrue((old_target / "scripts" / "check_surface.py").is_file())
             self.assertFalse(any(old_target.rglob("__pycache__")))
@@ -279,25 +279,25 @@ class InstallerTests(unittest.TestCase):
 class FixtureContractTests(unittest.TestCase):
     def test_interface_icon_assets_are_valid(self) -> None:
         skill_root = REPOSITORY_ROOT / "no-negative-echo"
-        svg_path = skill_root / "assets" / "icon.svg"
-        png_path = skill_root / "assets" / "icon-400.png"
         metadata = (skill_root / "agents" / "openai.yaml").read_text(
             encoding="utf-8"
         )
 
-        svg = svg_path.read_text(encoding="utf-8")
-        self.assertIn('viewBox="0 0 1024 1024"', svg)
-        self.assertNotIn("<text", svg.lower())
+        for filename, expected_dimensions in {
+            "icon.png": (1024, 1024),
+            "icon-400.png": (400, 400),
+        }.items():
+            png = (skill_root / "assets" / filename).read_bytes()
+            self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
+            dimensions = (
+                int.from_bytes(png[16:20], "big"),
+                int.from_bytes(png[20:24], "big"),
+            )
+            self.assertEqual(dimensions, expected_dimensions)
+            self.assertIn(png[25], {4, 6}, f"{filename} must preserve alpha")
 
-        png = png_path.read_bytes()
-        self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
-        dimensions = (
-            int.from_bytes(png[16:20], "big"),
-            int.from_bytes(png[20:24], "big"),
-        )
-        self.assertEqual(dimensions, (400, 400))
         self.assertIn('icon_small: "./assets/icon-400.png"', metadata)
-        self.assertIn('icon_large: "./assets/icon.svg"', metadata)
+        self.assertIn('icon_large: "./assets/icon.png"', metadata)
 
     def test_installable_skill_excludes_evaluation_harness(self) -> None:
         skill_root = REPOSITORY_ROOT / "no-negative-echo"
