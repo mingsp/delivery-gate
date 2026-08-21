@@ -1,20 +1,100 @@
-# No Negative Echo
+<p align="center">
+  <img src="./no-negative-echo/assets/icon.svg" width="168" height="168" alt="No Negative Echo icon">
+</p>
 
-让 Codex 交付最终结果，别把聊天里淘汰掉的方案留在标题、注释和 Git 历史里。
+<h1 align="center">No Negative Echo</h1>
 
-## 为什么会有这个 Skill
+<p align="center"><strong>Codex final-output hygiene · Codex 最终交付清理 Skill</strong></p>
+
+<p align="center"><em>Ship the result, not the conversation.</em></p>
+
+<p align="center">
+  <a href="https://github.com/LB623/no-negative-echo/actions/workflows/test.yml"><img src="https://github.com/LB623/no-negative-echo/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/LB623/no-negative-echo/stargazers"><img src="https://img.shields.io/github/stars/LB623/no-negative-echo?style=flat&amp;logo=github" alt="GitHub stars"></a>
+  <img src="https://img.shields.io/badge/Codex-Skill-F97316" alt="Codex Skill">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/docs-中文-E11D48" alt="中文文档">
+</p>
+
+<p align="center">
+  <a href="#about">关于</a> ·
+  <a href="#install">安装</a> ·
+  <a href="#usage">使用</a> ·
+  <a href="#boundary">判断边界</a> ·
+  <a href="#evaluation">评测</a> ·
+  <a href="#feedback">反馈</a>
+</p>
+
+---
+
+<a id="about"></a>
+
+## 这是什么
+
+`no-negative-echo` 处理一种很具体的 Agent 失误：方案已经改对，最终产物却还在标题、注释、commit 或 PR 里复述这次聊天淘汰过什么。
+
+```diff
+- PR: 登录态刷新（不使用定时轮询）
++ PR: 按需刷新过期访问令牌
+```
+
+Skill 会根据最终采用的结果生成正文和外层文案，再检查标题、文件名、代码注释、测试名、commit、PR、发布说明和交付说明。会话中的草案只用来约束生成，不自动变成项目历史。
+
+### 为什么做这个 Skill
 
 我已经手改过太多次 commit message。最常改的一类，我给它起了个固定名字：「移除此地无银三百两」。
 
-场景通常是这样的。让 Agent 做一盘番茄炒蛋，它先加了东坡肉；指出问题后，它把东坡肉删了。等到提 PR，标题却变成了 `番茄炒蛋（无东坡肉）`，代码注释里还要解释一遍为什么这道菜不需要东坡肉。
+典型场景是，让 Agent 做一盘番茄炒蛋，它先加了东坡肉。指出问题后，菜改对了，PR 标题却成了 `番茄炒蛋（无东坡肉）`，注释里还要解释为什么这道菜不需要东坡肉。
 
-写文章也会遇到同样的问题。正文里的自证句刚删完，标题又被改成 `某某综述：不过度防御且无提示版`。内容已经改对，交付层还在复述一段只有这次聊天才知道的过程。
+写文章也会碰到同样的问题。正文里的自证句删完，标题又冒出 `某某综述：不过度防御且无提示版`。成品已经和那些说法没关系，交付层却把纠正过程带了回来。
 
-`no-negative-echo` 就是为这件事做的。它让 Codex 根据最终采用的结果写标题、注释、commit、PR 和交付说明，不把会话里的纠正过程带进成品。番茄炒蛋的比喻来自 [@songkeys 的这条帖子](https://x.com/songkeys/status/2090416137720999992)。
+这个比喻来自 [@songkeys 的帖子](https://x.com/songkeys/status/2090416137720999992)，更完整的背景和讨论收在 [`BACKGROUND.md`](BACKGROUND.md)。
 
-## 它会处理什么
+<a id="install"></a>
 
-| 场景 | 常见的会话残留 | 期望的写法 |
+## 安装
+
+目前只适配并验证了 Codex。
+
+### 让 Codex 直接安装
+
+把下面这段发给 Codex：
+
+```text
+请安装 no-negative-echo Skill。先克隆 https://github.com/LB623/no-negative-echo，再运行 python3 no-negative-echo/scripts/install_skill.py。安装后检查 SKILL.md、agents/openai.yaml 和图标文件是否完整，告诉我安装路径，并提醒我下一轮对话开始使用。
+```
+
+### 命令行安装
+
+```bash
+git clone --depth 1 https://github.com/LB623/no-negative-echo.git && python3 no-negative-echo/scripts/install_skill.py
+```
+
+脚本默认安装到 `${CODEX_HOME:-$HOME/.codex}/skills/no-negative-echo`。再次运行会替换旧版本，不会把旧目录里的评测文件和缓存带进运行包。替换失败时，脚本会恢复原目录。
+
+安装完成后，重新加载或重启 Codex。
+
+<a id="usage"></a>
+
+## 使用
+
+这类请求可以隐式触发。长对话结束，准备生成 commit、PR、发布标题或最终交付说明时，显式调用更稳：
+
+```text
+$no-negative-echo
+根据最终 diff 写 commit subject、PR 标题、PR 正文和交付说明。
+```
+
+文章场景可以这样用：
+
+```text
+$no-negative-echo
+根据最终保留的正文重写标题和开篇。
+```
+
+### 它会检查哪些位置
+
+| 位置 | 会话残留 | 最终写法 |
 |---|---|---|
 | PR 标题 | `登录态刷新（不使用定时轮询）` | `按需刷新过期访问令牌` |
 | 代码注释 | `// 不使用 setInterval，避免定时轮询` | `// 仅在访问令牌过期后刷新一次` |
@@ -22,86 +102,58 @@
 | 文章标题 | `智能体评测综述：不过度防御且无提示版` | `智能体评测方法综述` |
 | 交付说明 | `已去掉轮询方案及相关说明` | `登录态改为按需刷新，相关测试已通过` |
 
-它会一起检查正文、标题、开篇、文件名、UI 文案、代码注释、文档、测试名、commit、PR、发布说明和最后的交付说明。
+<a id="boundary"></a>
 
-## 哪些内容应该保留
+## 判断边界
 
-这个 Skill 不做关键词清零。真实发生过的变更、用户需要知道的风险和迁移信息，删掉反而会让交付失真。
+这个 Skill 不做关键词清零。真实发生过的删除、迁移要求和安全信息，本来就应该写清楚。
 
-| 内容 | 默认处理 |
+| 内容 | 处理方式 |
 |---|---|
-| 只在聊天里讨论过、从未进入仓库的方案 | 省略 |
+| 只在聊天里讨论过、从未进入基线的方案 | 省略 |
 | 未保存的助手草稿和中间尝试 | 省略 |
 | 用户纠正过的标题框架、语气和自证句 | 省略 |
 | 已发布的 v1 API 确实被删除 | 保留，并写清迁移方式 |
 | 过敏原、安全规则、法律或兼容性要求 | 保留 |
 | 用户明确要求的方案比较、审计和逐字引用 | 保留 |
 
-判断时只看一件事：一个没看过这次会话的人，是否需要这条信息才能正确理解或使用结果。如果答案是否定的，它通常不该出现在最终产物里。
+每个输出位置都会单独判断三件事：没看过工作会话的读者是否需要这条信息；省略后是否会造成不安全、不准确、误导或迁移困难；这项变化是否真实存在于任务开始时的代码、已发布产品或用户确认过的基线里。
 
-## 安装
-
-目前只适配并验证了 Codex。克隆或下载本仓库后，在仓库根目录执行：
-
-```bash
-python3 scripts/install_skill.py
+```mermaid
+flowchart LR
+    A[最终保留的事实] --> D[用户可见产物]
+    B[会话中的草案和纠正] --> C{读者是否必须知道}
+    C -->|是| D
+    C -->|否| E[只作为内部约束]
 ```
 
-脚本默认安装到 `${CODEX_HOME:-$HOME/.codex}/skills/no-negative-echo`。再次运行会替换旧版本，旧目录里的评测文件和其他残留不会混进运行包；替换失败时会恢复原目录。
-
-重新加载或重启 Codex，让 Skill 目录刷新。
-
-## 使用
-
-符合这类问题的请求可以隐式触发。长对话结束、准备生成 commit、PR、发布标题或最终交付说明时，建议显式调用：
-
-```text
-$no-negative-echo
-根据最终 diff 写 commit subject、PR 标题、PR 正文和交付说明。
-```
-
-文章场景也可以直接用：
-
-```text
-$no-negative-echo
-根据最终保留的正文重写标题和开篇。
-```
-
-## 它怎么判断
-
-每个输出表面都会单独过三项判断：
-
-- 没看过工作会话的读者，是否需要这条信息；
-- 省略后，结果是否会变得不安全、不准确、具有误导性或无法迁移；
-- 这项变化是否真实存在于任务开始时的代码、已发布产品或用户确认过的基线里。
-
-助手草稿、临时补丁和未接受的方案不算基线。真实删除了公开 API，commit 和发布说明可以写；某个方案只在聊天里讨论过，Git 历史里就不该突然出现它。
-
-生成完成后，Skill 会检查所有已经要求的表面。检查通过之后又新写了标题、文件名、commit 或 PR，前一次检查自动作废，需要重新看一遍。
+助手草稿、临时补丁和未接受的方案不算基线。真实删除公开 API 时，commit 和发布说明可以写；某个方案只在聊天里出现过，Git 历史里就不该突然出现它。
 
 ## 能力边界
 
-这是一个提示词层的 Skill，不是确定性的内容过滤器。它能降低会话残留进入成品的概率，不能承诺每次都消失。
+这是提示词层的缓解措施，不是确定性过滤器。它能降低会话残留进入成品的概率，不能承诺每次都消失。
 
 - Codex 是否隐式加载 Skill 由宿主决定，重要交付建议显式调用。
 - Skill 无法擦除模型已经读到的上下文，也控制不了终端输出、工具日志和宿主生成的界面文案。
-- 自带扫描器只能检查确定的文本，换词复述仍然需要语义判断。
+- 自带扫描器只能检查确定文本，换词复述仍然需要语义判断。
 - 它处理最终交付里的会话残留，不负责阻止模型一开始做多余的实现。
 - 凭据、个人信息和其他敏感数据仍应使用专门的密钥扫描或合规工具检查。
 
 Claude Code、Cursor 等环境还没有做过独立的安装和行为测试，本仓库不会把它们写成已支持平台。
 
+<a id="evaluation"></a>
+
 ## 开发和评测
 
-运行脚本测试：
+运行本地测试：
 
 ```bash
 python3 tests/test_scripts.py
 ```
 
-安装目录 [`no-negative-echo/`](no-negative-echo/) 只放运行时需要的文件。评测提示和答案放在 [`evals/`](evals/) 里，避免测试用的词在安装 Skill 时进入运行包。
+安装目录 [`no-negative-echo/`](no-negative-echo/) 只放运行时文件。评测提示和答案放在 [`evals/`](evals/) 里，避免开发用例跟着 Skill 一起进入模型上下文。
 
-公开用例只是开发集，不能证明问题已经消失。完整评测需要分别运行无 Skill、简短对照提示、显式调用和隐式调用，重复多次，并同时检查两件事：会话残留有没有泄漏，该保留的事实有没有被误删。具体格式见 [`evaluation-protocol.md`](evals/evaluation-protocol.md)。CI 配置在 [`.github/workflows/test.yml`](.github/workflows/test.yml)。
+公开用例只是开发集，不能证明问题已经消失。完整评测会分别运行无 Skill、简短对照提示、显式调用和隐式调用，并同时检查两件事：会话残留有没有泄漏，该保留的事实有没有被误删。格式和统计方法见 [`evaluation-protocol.md`](evals/evaluation-protocol.md)。
 
 <details>
 <summary>仓库结构</summary>
@@ -119,6 +171,9 @@ python3 tests/test_scripts.py
 ├── no-negative-echo/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
+│   ├── assets/
+│   │   ├── icon-400.png
+│   │   └── icon.svg
 │   └── scripts/check_surface.py
 ├── scripts/install_skill.py
 └── tests/
@@ -128,16 +183,8 @@ python3 tests/test_scripts.py
 
 </details>
 
-## 反馈问题
+<a id="feedback"></a>
 
-如果遇到新的「此地无银三百两」输出，提 Issue 时最好带上这些信息：
+## 反馈
 
-- 原始请求；
-- 实际输出和期望输出；
-- 泄漏出现在哪个位置，比如标题、注释、commit 或 PR；
-- 当时是显式调用还是隐式触发；
-- Codex 和模型版本。
-
-提交前请先替换真实凭据、个人信息和内部项目名。
-
-更完整的问题背景、社区讨论和参考资料放在 [`BACKGROUND.md`](BACKGROUND.md)。
+如果遇到新的「此地无银三百两」输出，提 Issue 时请带上原始请求、实际输出、期望输出、出现位置，以及当时是显式调用还是隐式触发。提交前先替换真实凭据、个人信息和内部项目名。

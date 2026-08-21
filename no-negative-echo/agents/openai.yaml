@@ -1,6 +1,9 @@
 interface:
   display_name: "No Negative Echo"
   short_description: "Reduce session-history residue in final deliverables"
+  icon_small: "./assets/icon-400.png"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#F97316"
   default_prompt: "Use $no-negative-echo to finalize this artifact from the accepted result and verify every user-facing surface."
 
 policy:
