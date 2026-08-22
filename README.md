@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="./no-negative-echo/assets/icon.png" width="168" height="168" alt="No Negative Echo icon">
+  <img src="./delivery-gate/assets/icon.png" width="168" height="168" alt="交付门禁图标">
 </p>
 
-<h1 align="center">No Negative Echo</h1>
+<h1 align="center">交付门禁</h1>
 
-<p align="center"><strong>Final-output hygiene for Agent Skills · 开放 Agent Skills 最终交付清理</strong></p>
+<p align="center"><strong>面向 Agent Skills 的最终交付验收与会话残留清理</strong></p>
 
 <p align="center"><em>Ship the result, not the conversation.</em></p>
 
@@ -13,9 +13,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/LB623/no-negative-echo/actions/workflows/test.yml"><img src="https://github.com/LB623/no-negative-echo/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-  <a href="https://github.com/LB623/no-negative-echo/stargazers"><img src="https://img.shields.io/github/stars/LB623/no-negative-echo?style=flat&amp;logo=github" alt="GitHub stars"></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/github/license/LB623/no-negative-echo" alt="MIT License"></a>
+  <a href="https://github.com/mingsp/delivery-gate/actions/workflows/test.yml"><img src="https://github.com/mingsp/delivery-gate/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/mingsp/delivery-gate/stargazers"><img src="https://img.shields.io/github/stars/mingsp/delivery-gate?style=flat&amp;logo=github" alt="GitHub stars"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/mingsp/delivery-gate" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/Agent%20Skills-open%20format-F97316" alt="Open Agent Skills format">
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/docs-中文-E11D48" alt="中文文档">
@@ -37,7 +37,7 @@
 
 ## 这是什么
 
-方案已经改对，Agent 最后却把聊天里淘汰过的内容写进了标题、注释、commit 或 PR。`no-negative-echo` 用于降低这类会话残留进入最终交付的概率。
+方案已经改对，Agent 最后却把聊天里淘汰过的内容写进了标题、注释、commit 或 PR。`delivery-gate` 用于降低这类会话残留进入最终交付的概率。
 
 ```diff
 - 标题：番茄炒蛋（没有东坡肉）
@@ -47,6 +47,8 @@
 它要求从最终采用且已经验证的状态重写正文和外层文案，并分别检查标题、文件名、代码注释、测试名、commit、PR、发布说明和交付说明。聊天里被否掉的草案通常只作为控制信息；真实基线变化、已执行的外部操作和必要的安全、迁移、兼容及审计事实仍须保留。
 
 运行包采用 [Agent Skills 开放格式](https://agentskills.io/specification)的公共子集。支持该格式的宿主可以原生发现它；其他能读取仓库文件的 Agent 可通过手动提示词加载。这里的“兼容”只指包结构和可用安装路径，不代表每个宿主上都已验证行为有效性。
+
+本项目基于 [LB623/no-negative-echo](https://github.com/LB623/no-negative-echo) 的 MIT 许可版本二次开发，保留原始版权与许可声明。
 
 ### 为什么做这个 Skill
 
@@ -69,8 +71,8 @@
 把下面这段发给有网络、终端和文件权限的 Agent：
 
 ```text
-请安装 no-negative-echo Skill：
-https://raw.githubusercontent.com/LB623/no-negative-echo/main/INSTALL.md
+请安装 delivery-gate Skill：
+https://raw.githubusercontent.com/mingsp/delivery-gate/main/INSTALL.md
 装完告诉我安装结果，以及是否需要开启新会话或重启。无法验证时，不要宣称安装成功。
 ```
 
@@ -79,15 +81,17 @@ https://raw.githubusercontent.com/LB623/no-negative-echo/main/INSTALL.md
 ### 命令行安装
 
 ```bash
-git clone https://github.com/LB623/no-negative-echo.git
-python3 -I -m unittest discover -s no-negative-echo/tests -p 'test_*.py'
-python3 -I no-negative-echo/scripts/install_skill.py \
-  --expected-provenance-sha256 9cc10a0f1d2d87f0de8517bf40c59e364783e2410308a0c8f815288f53a7cc47 \
+git clone https://github.com/mingsp/delivery-gate.git
+python3 -I -m unittest discover -s delivery-gate/tests -p 'test_*.py'
+python3 -I delivery-gate/scripts/install_skill.py \
+  --expected-provenance-sha256 ee802f2ced497b6ef841291604cf7e15492f509d9705892a369f147d38ec5a28 \
   --discovery-root "$HOME/.agents/skills" \
   --agent codex
 ```
 
 上例安装到当前 Codex 路径；使用其他宿主时，按下表替换 preset。只在用户明确要求一份安装共享给多个宿主时使用 `--agent shared`。
+
+如果发现旧版 `no-negative-echo`，先核验它确实是原始官方安装，再将其移到 Skill 发现根之外的可恢复备份目录，然后安装 `delivery-gate`。不要让新旧名称同时留在可发现目录中；安装器不会擅自删除或覆盖不同名称的目录。
 
 安装矩阵（官方文档核实日期：2026-08-22。“原生包”表示厂商明确支持 `SKILL.md`，不表示本仓库已在该宿主完成行为评测）：
 
@@ -103,20 +107,20 @@ python3 -I no-negative-echo/scripts/install_skill.py \
 
 表中 preset 只适用于具有持久本地 home 的列出 surface，不代表 Codex cloud 或其他 web/remote/ephemeral surface 支持用户级安装。这些 surface 只能在官方文档明确项目级根目录、且用户授权修改当前仓库时使用 `--skills-dir`；否则应报告不支持，不能对临时 home 的复制声称持久安装成功。
 
-脚本会在所选根目录下创建 `no-negative-echo`。它只接受固定运行文件清单，拒绝符号链接、特殊文件和未知文件，并用 provenance marker 的文件哈希防止把用户改过的同名目录误当成官方安装覆盖。只有普通 `.DS_Store` 以及 `__pycache__` 直接包含的普通 `.pyc`/`.pyo` 会被当作可丢弃缓存；其他附加内容都会让安装原地停止。无 marker 的历史官方版只在完整路径和哈希精确匹配已知提交时才会自动迁移；自定义、不完整或其他无法识别的目录会原地保留并报错。暂存目录和已验证旧版的 recovery 目录都放在 Skill 发现根之外的同盘相邻位置；升级成功后旧版不会被自动递归删除，而是保留并报告精确路径，避免扫描到两份 Skill 或因路径交换误删数据。新目标重命名后还会重验运行清单、provenance 和目录身份；如无法确认，安装器会显式报告 activation uncertain 及目标/recovery 路径，不会普通报成功。在激活前，Python 能捕获的替换异常（包括 `KeyboardInterrupt`）会尝试恢复旧目录；恢复失败则报告需要人工检查的 recovery 路径。进程崩溃、断电或 `SIGKILL` 仍可能在两次重命名之间使目标暂时缺失；重试前应先检查报告的 recovery 路径。provenance 只是本次安装的完整性与所有权边界，不是代码签名。需要可复现安装时，请先 checkout 你信任的 tag 或 commit。
+脚本会在所选根目录下创建 `delivery-gate`。它只接受固定运行文件清单，拒绝符号链接、特殊文件和未知文件，并用 provenance marker 的文件哈希防止把用户改过的同名目录误当成官方安装覆盖。只有普通 `.DS_Store` 以及 `__pycache__` 直接包含的普通 `.pyc`/`.pyo` 会被当作可丢弃缓存；其他附加内容都会让安装原地停止。无 marker 的历史官方版只在完整路径和哈希精确匹配已知提交时才会自动迁移；自定义、不完整或其他无法识别的目录会原地保留并报错。暂存目录和已验证旧版的 recovery 目录都放在 Skill 发现根之外的同盘相邻位置；升级成功后旧版不会被自动递归删除，而是保留并报告精确路径，避免扫描到两份 Skill 或因路径交换误删数据。新目标重命名后还会重验运行清单、provenance 和目录身份；如无法确认，安装器会显式报告 activation uncertain 及目标/recovery 路径，不会普通报成功。在激活前，Python 能捕获的替换异常（包括 `KeyboardInterrupt`）会尝试恢复旧目录；恢复失败则报告需要人工检查的 recovery 路径。进程崩溃、断电或 `SIGKILL` 仍可能在两次重命名之间使目标暂时缺失；重试前应先检查报告的 recovery 路径。provenance 只是本次安装的完整性与所有权边界，不是代码签名。需要可复现安装时，请先 checkout 你信任的 tag 或 commit。
 
 有 marker 的旧目标还必须匹配安装器内置的官方 marker SHA-256；自写一份结构和内部哈希都自洽的 marker，也不构成自动覆盖授权。Claude preset 只按 Claude Code 自身的发现根判断冲突；由于 Cursor 也可读取 `.claude/skills`，同时使用 Cursor 的人还要确保 `.agents/skills`、`.cursor/skills`、`.claude/skills` 和 legacy `.codex/skills` 中只有一份可发现副本。
 
 早于 `.gitattributes` 的官方历史文本会先把 Windows checkout 的 CRLF 规范为 LF 再比对，二进制文件仍逐字节匹配；安装器不容忍其他内容变化。
 
-安装后按宿主的方式 reload/restart，再在技能列表中确认 `no-negative-echo`。目录存在只能证明文件已安装；列表可见只能证明已发现，两者都不能单独证明本轮已激活或行为有效。除非宿主能同时确认当前会话已重扫描且已激活，否则仍应报告需要或建议新会话，不能仅凭列表可见报告“不需要”。
+安装后按宿主的方式 reload/restart，再在技能列表中确认 `delivery-gate`。目录存在只能证明文件已安装；列表可见只能证明已发现，两者都不能单独证明本轮已激活或行为有效。除非宿主能同时确认当前会话已重扫描且已激活，否则仍应报告需要或建议新会话，不能仅凭列表可见报告“不需要”。
 
 ### 手动回退：不依赖原生 Skill 发现
 
 如果 Agent 可以读取克隆后的文件，但不支持 Agent Skills 或无法确认已发现，每次任务开始时显式发送：
 
 ```text
-在开始任务前，请完整读取 ./no-negative-echo/SKILL.md，把相对路径视为相对 ./no-negative-echo，并在本轮遵循其中流程。交付时说明实际读取的文件和实际运行的检查；如果无法读取或运行脚本，请明确标注 best-effort，不要宣称 Skill 已被宿主激活。
+在开始任务前，请完整读取 ./delivery-gate/SKILL.md，把相对路径视为相对 ./delivery-gate，并在本轮遵循其中流程。交付时说明实际读取的文件和实际运行的检查；如果无法读取或运行脚本，请明确标注 best-effort，不要宣称 Skill 已被宿主激活。
 ```
 
 只想持久放一条轻量规则时，也可把下面这段加到宿主能够稳定加载的项目指令文件（例如支持该文件的宿主中使用 `AGENTS.md`）：
@@ -136,17 +140,17 @@ python3 -I no-negative-echo/scripts/install_skill.py \
 
 ## 使用
 
-支持隐式匹配的宿主可根据 `description` 自行选择该 Skill，但发现不等于激活。长对话结束后，准备生成 commit、PR、发布标题或交付说明时，最好显式指定它。Codex 的文档化语法是 `$no-negative-echo`，Claude Code 是 `/no-negative-echo`；其他宿主按其当前的原生方式选择 Skill，或在提示词中直接点名并验证实际激活，不要仅从输出措辞推断。
+支持隐式匹配的宿主可根据 `description` 自行选择该 Skill，但发现不等于激活。日常可以直接说“交付验收一下”“使用交付门禁”或“检查最终交付”。长对话结束后，准备生成 commit、PR、发布标题或交付说明时，最好显式指定它。Codex 的原生显式语法是 `$delivery-gate`，Claude Code 是 `/delivery-gate`；其他宿主按其当前方式选择 Skill，不要仅从输出措辞推断已经激活。
 
 ```text
-使用 no-negative-echo Skill。
+交付验收一下。
 根据最终 diff 写 commit subject、PR 标题、PR 正文和交付说明。
 ```
 
 文章场景可以这样用：
 
 ```text
-使用 no-negative-echo Skill。
+使用交付门禁。
 根据最终保留的正文重写标题和开篇。
 ```
 
@@ -187,7 +191,7 @@ python3 -I no-negative-echo/scripts/install_skill.py \
 第一项是前提。在此基础上，第二项或第三项至少满足一项，这条信息才保留。用户明确要求的方案比较、审计、逐字引用、发布记录或迁移说明也应保留。
 
 <p align="center">
-  <img src="./no-negative-echo/assets/decision-boundary.png" width="920" alt="工作会话中的草稿和修改痕迹留在筛选边界之外，只有一份干净的最终文档进入交付">
+  <img src="./delivery-gate/assets/decision-boundary.png" width="920" alt="工作会话中的草稿和修改痕迹留在筛选边界之外，只有一份干净的最终文档进入交付">
 </p>
 
 权威基线要按输出位置选择：commit 看父 tree 或 staged diff，PR 看目标分支 merge-base，发布说明看上一个已发布版本，交付说明还要考虑任务开始时的完整工作区和实际执行过的外部操作。未提交不等于被否；用户原有改动必须单独保留归属。助手草稿、未采用补丁和纯本地临时尝试才属于会话历史。
@@ -215,7 +219,7 @@ python3 -I no-negative-echo/scripts/install_skill.py \
 python3 -I -m unittest discover -s tests -p 'test_*.py'
 ```
 
-安装目录 [`no-negative-echo/`](no-negative-echo/) 只放运行时文件。评测提示和答案放在 [`evals/`](evals/) 里，避免开发用例跟着 Skill 一起进入模型上下文。
+安装目录 [`delivery-gate/`](delivery-gate/) 只放运行时文件。评测提示和答案放在 [`evals/`](evals/) 里，避免开发用例跟着 Skill 一起进入模型上下文。
 
 公开用例只用于开发，跑通不等于问题消失。仓库提供无 Skill、固定对照提示、显式调用和隐式调用的评测协议，要求把 routing 与激活后的行为分开报告，并使用独立裁判、冻结输出、真实 surface 回读和未公开 holdout。一次完整评测只需预先声明一个 reference host，并在四个条件中固定该宿主及版本；不需要把所有 Agent 都测一遍。其他宿主只作独立、可选的 replication，不与主评测混池。评分器每次只验证一个条件，`--reference-host` 也只是申报标签；完整的四条件一致性必须由调度器和冻结 manifest 审计保证。CI 只运行确定性脚本与评分器测试，不运行 Agent 模型评测，也不产生有效性百分比。格式和统计限制见 [`evaluation-protocol.md`](evals/evaluation-protocol.md)。
 
@@ -237,8 +241,8 @@ python3 -I -m unittest discover -s tests -p 'test_*.py'
 │   ├── evaluation-prompts.jsonl
 │   ├── evaluation-protocol.md
 │   └── score_eval.py
-├── no-negative-echo/
-│   ├── .no-negative-echo-provenance.json
+├── delivery-gate/
+│   ├── .delivery-gate-provenance.json
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── assets/

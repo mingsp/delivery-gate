@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="./no-negative-echo/assets/icon.png" width="168" height="168" alt="No Negative Echo icon">
+  <img src="./delivery-gate/assets/icon.png" width="168" height="168" alt="Delivery Gate icon">
 </p>
 
-<h1 align="center">No Negative Echo</h1>
+<h1 align="center">Delivery Gate</h1>
 
 <p align="center"><strong>Final-output hygiene for Agent Skills</strong></p>
 
@@ -13,9 +13,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/LB623/no-negative-echo/actions/workflows/test.yml"><img src="https://github.com/LB623/no-negative-echo/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-  <a href="https://github.com/LB623/no-negative-echo/stargazers"><img src="https://img.shields.io/github/stars/LB623/no-negative-echo?style=flat&amp;logo=github" alt="GitHub stars"></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/github/license/LB623/no-negative-echo" alt="MIT License"></a>
+  <a href="https://github.com/mingsp/delivery-gate/actions/workflows/test.yml"><img src="https://github.com/mingsp/delivery-gate/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/mingsp/delivery-gate/stargazers"><img src="https://img.shields.io/github/stars/mingsp/delivery-gate?style=flat&amp;logo=github" alt="GitHub stars"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/mingsp/delivery-gate" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/Agent%20Skills-open%20format-F97316" alt="Open Agent Skills format">
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/docs-English-E11D48" alt="English docs">
@@ -37,7 +37,7 @@
 
 ## What this skill does
 
-Sometimes the implementation is fixed, but the final title, comment, commit, or PR still repeats an idea rejected during the conversation. `no-negative-echo` aims to reduce that session residue in final deliverables.
+Sometimes the implementation is fixed, but the final title, comment, commit, or PR still repeats an idea rejected during the conversation. `delivery-gate` aims to reduce that session residue in final deliverables.
 
 ```diff
 - Title: Tomato and scrambled eggs (no braised pork)
@@ -48,9 +48,11 @@ It rewrites the artifact and surrounding copy from the accepted, verified state,
 
 The runtime package uses the common subset of the [open Agent Skills format](https://agentskills.io/specification). Hosts that support the format can discover it natively; other agents that can read repository files can load it through a manual prompt. Here, "compatible" refers only to package structure and an available installation path. It does not mean behavioral efficacy has been validated on every host.
 
+This project is a derivative of [LB623/no-negative-echo](https://github.com/LB623/no-negative-echo) under the MIT License and preserves the original copyright and license notice.
+
 ### Why I built it
 
-I have rewritten too many commit messages by hand. The same mistake kept showing up, so I gave it a name: No Negative Echo.
+The upstream project named this recurring failure “No Negative Echo”; Delivery Gate keeps that decision boundary while adding a Chinese-first invocation and project identity.
 
 A typical case looks like this: ask an agent to make tomato and scrambled eggs, and it first adds braised pork. After correction, the dish is right, but the PR title becomes `Tomato and scrambled eggs (no braised pork)`. The comment then explains why the dish does not need braised pork.
 
@@ -69,8 +71,8 @@ This package follows the Agent Skills `SKILL.md` plus optional scripts/resources
 Send this prompt to an agent with network, terminal, and filesystem access:
 
 ```text
-Please install the no-negative-echo Skill from:
-https://raw.githubusercontent.com/LB623/no-negative-echo/main/INSTALL.md
+Please install the delivery-gate Skill from:
+https://raw.githubusercontent.com/mingsp/delivery-gate/main/INSTALL.md
 When finished, tell me the installation result and whether a new session or restart is required. If you cannot verify it, do not claim success.
 ```
 
@@ -79,15 +81,17 @@ When finished, tell me the installation result and whether a new session or rest
 ### Install from the command line
 
 ```bash
-git clone https://github.com/LB623/no-negative-echo.git
-python3 -I -m unittest discover -s no-negative-echo/tests -p 'test_*.py'
-python3 -I no-negative-echo/scripts/install_skill.py \
-  --expected-provenance-sha256 9cc10a0f1d2d87f0de8517bf40c59e364783e2410308a0c8f815288f53a7cc47 \
+git clone https://github.com/mingsp/delivery-gate.git
+python3 -I -m unittest discover -s delivery-gate/tests -p 'test_*.py'
+python3 -I delivery-gate/scripts/install_skill.py \
+  --expected-provenance-sha256 ee802f2ced497b6ef841291604cf7e15492f509d9705892a369f147d38ec5a28 \
   --discovery-root "$HOME/.agents/skills" \
   --agent codex
 ```
 
 This example installs to the current Codex path. For another host, replace the preset using the matrix below. Use `--agent shared` only when the user explicitly requests one installation shared by multiple hosts.
+
+If an existing `no-negative-echo` installation is found, first verify that it is an unmodified upstream installation, move it to a recoverable backup outside every Skill discovery root, and then install `delivery-gate`. Do not leave both names discoverable; the installer does not silently delete or overwrite a differently named directory.
 
 Installation matrix (official documentation checked 2026-08-22. "Native package" means the vendor explicitly supports `SKILL.md`; it does not mean this repository has completed behavioral evaluation on that host):
 
@@ -103,20 +107,20 @@ Installation matrix (official documentation checked 2026-08-22. "Native package"
 
 The presets in the table apply only to the listed surfaces with a persistent local home; they do not assert user-level installation support for Codex cloud or other web, remote, or ephemeral surfaces. Such a surface may use `--skills-dir` only when official documentation names its exact project root and the user authorizes modifying the current repository. Otherwise, report the surface as unsupported rather than claiming that a copy in a temporary home is a persistent installation.
 
-The script creates `no-negative-echo` under the selected root. It accepts only a fixed runtime manifest, rejects symlinks, special files, and unknown files, and uses file hashes in a provenance marker so a user-modified same-name directory is not mistaken for an owned installation. Only regular `.DS_Store` files and regular `.pyc`/`.pyo` files directly inside `__pycache__` are treated as disposable cache; any other added content makes installation stop in place. An unmarked historical official version is migrated only when every path and digest exactly matches a known commit; customized, partial, and otherwise unrecognized directories are preserved in place and rejected. Staging and validated previous-version recovery directories live at same-filesystem sibling paths outside the Skill discovery root. After an upgrade, the old version is preserved and its exact path is reported instead of being recursively deleted; this prevents duplicate discovery and path-swap deletion. After the new target is renamed into place, the installer revalidates its manifest, provenance, and directory identity. If that cannot be proven, it explicitly reports activation as uncertain with the target/recovery paths instead of reporting ordinary success. Before activation, replacement errors that Python can catch, including `KeyboardInterrupt`, trigger an attempted rollback; if rollback itself fails, the script reports the recovery path that requires manual inspection. A process crash, power loss, or `SIGKILL` can still land between the two renames and temporarily leave the target absent; inspect the reported recovery path before retrying. Provenance is an integrity and ownership boundary for this installation, not a code signature. For reproducible installation, check out a trusted tag or commit first.
+The script creates `delivery-gate` under the selected root. It accepts only a fixed runtime manifest, rejects symlinks, special files, and unknown files, and uses file hashes in a provenance marker so a user-modified same-name directory is not mistaken for an owned installation. Only regular `.DS_Store` files and regular `.pyc`/`.pyo` files directly inside `__pycache__` are treated as disposable cache; any other added content makes installation stop in place. An unmarked historical official version is migrated only when every path and digest exactly matches a known commit; customized, partial, and otherwise unrecognized directories are preserved in place and rejected. Staging and validated previous-version recovery directories live at same-filesystem sibling paths outside the Skill discovery root. After an upgrade, the old version is preserved and its exact path is reported instead of being recursively deleted; this prevents duplicate discovery and path-swap deletion. After the new target is renamed into place, the installer revalidates its manifest, provenance, and directory identity. If that cannot be proven, it explicitly reports activation as uncertain with the target/recovery paths instead of reporting ordinary success. Before activation, replacement errors that Python can catch, including `KeyboardInterrupt`, trigger an attempted rollback; if rollback itself fails, the script reports the recovery path that requires manual inspection. A process crash, power loss, or `SIGKILL` can still land between the two renames and temporarily leave the target absent; inspect the reported recovery path before retrying. Provenance is an integrity and ownership boundary for this installation, not a code signature. For reproducible installation, check out a trusted tag or commit first.
 
 A marked destination must also match an official marker SHA-256 embedded in the installer; a self-authored marker with an internally consistent structure and file hashes does not grant overwrite ownership. The Claude preset checks conflicts only in Claude Code's own discovery root. Because Cursor can also read `.claude/skills`, people who use Cursor as well must ensure that only one discoverable copy exists across `.agents/skills`, `.cursor/skills`, `.claude/skills`, and legacy `.codex/skills`.
 
 For official historical text released before `.gitattributes`, the installer canonicalizes Windows checkout CRLF endings to LF before comparison. Binary files still match byte for byte, and no other content changes are tolerated.
 
-Reload or restart as required by the host, then confirm that `no-negative-echo` appears in its skill list. A directory proves file installation; list visibility proves discovery. Neither alone proves activation in the current turn or behavioral efficacy. Unless the host can confirm both a current-session rescan and current-session activation, report that a new session is required or recommended; list visibility alone cannot justify "not required."
+Reload or restart as required by the host, then confirm that `delivery-gate` appears in its skill list. A directory proves file installation; list visibility proves discovery. Neither alone proves activation in the current turn or behavioral efficacy. Unless the host can confirm both a current-session rescan and current-session activation, report that a new session is required or recommended; list visibility alone cannot justify "not required."
 
 ### Manual fallback without native skill discovery
 
 If the agent can read the cloned files but does not support Agent Skills, or discovery cannot be confirmed, send this at the start of each task:
 
 ```text
-Before starting the task, read ./no-negative-echo/SKILL.md in full, resolve its relative paths against ./no-negative-echo, and follow its workflow for this turn. In the handoff, state which files you actually read and which checks you actually ran. If you cannot read the files or run the scripts, label the result best-effort and do not claim that the host activated the Skill.
+Before starting the task, read ./delivery-gate/SKILL.md in full, resolve its relative paths against ./delivery-gate, and follow its workflow for this turn. In the handoff, state which files you actually read and which checks you actually ran. If you cannot read the files or run the scripts, label the result best-effort and do not claim that the host activated the Skill.
 ```
 
 For a persistent lightweight rule, add this block to a project instruction file the host reliably loads, such as `AGENTS.md` on hosts that support it:
@@ -136,17 +140,17 @@ These fallbacks do not depend on native discovery, but they are not equivalent t
 
 ## Usage
 
-Hosts that support implicit matching may select the Skill from its `description`, but discovery is not activation. After a long conversation, explicitly name it before generating a commit, PR, release title, or handoff note. The documented syntax is `$no-negative-echo` in Codex and `/no-negative-echo` in Claude Code. On other hosts, select the Skill through that host's current native mechanism, or name it directly in the prompt and verify actual activation; do not infer activation from output wording alone.
+Hosts that support implicit matching may select the Skill from its `description`, but discovery is not activation. After a long conversation, explicitly name it before generating a commit, PR, release title, or handoff note. The documented syntax is `$delivery-gate` in Codex and `/delivery-gate` in Claude Code. On other hosts, select the Skill through that host's current native mechanism, or name it directly in the prompt and verify actual activation; do not infer activation from output wording alone.
 
 ```text
-Use the no-negative-echo Skill.
+Use the delivery-gate Skill.
 Write the commit subject, PR title, PR body, and handoff note from the final diff.
 ```
 
 For an article:
 
 ```text
-Use the no-negative-echo Skill.
+Use the delivery-gate Skill.
 Rewrite the title and opening from the retained final text.
 ```
 
@@ -187,7 +191,7 @@ Judge each output surface separately:
 The first condition is required. If it holds, keep the information when either the second or third condition also holds. Keep comparisons, audits, verbatim quotations, changelogs, and migration notes when the user explicitly requests them.
 
 <p align="center">
-  <img src="./no-negative-echo/assets/decision-boundary.png" width="920" alt="Working-session drafts and correction traces remain outside the review boundary while one clean final document moves into delivery">
+  <img src="./delivery-gate/assets/decision-boundary.png" width="920" alt="Working-session drafts and correction traces remain outside the review boundary while one clean final document moves into delivery">
 </p>
 
 Choose the authoritative baseline per surface: a commit uses its parent tree or staged diff, a PR uses the target-branch merge base, a release note uses the previous release, and a handoff also accounts for the initial working tree and executed external actions. Uncommitted does not mean rejected; preserve ownership of pre-existing user changes. Only assistant drafts, unaccepted patches, and local temporary attempts are session history.
@@ -215,7 +219,7 @@ Run the local tests:
 python3 -I -m unittest discover -s tests -p 'test_*.py'
 ```
 
-The installed [`no-negative-echo/`](no-negative-echo/) directory contains runtime files only. Evaluation prompts and answers live in [`evals/`](evals/) so development cases do not enter the model context with the skill.
+The installed [`delivery-gate/`](delivery-gate/) directory contains runtime files only. Evaluation prompts and answers live in [`evals/`](evals/) so development cases do not enter the model context with the skill.
 
 The public cases are a development set. Passing them does not mean the problem is solved. The repository specifies four conditions—no skill, a frozen comparator, explicit invocation, and implicit invocation—and requires routing to be reported separately from post-activation behavior, with independent judgments, frozen outputs, real-surface readback, and an unpublished holdout. One complete evaluation declares one reference host in advance and holds that host and version fixed across all four conditions; it does not need to test every agent. Other hosts are optional, independent replications and are not pooled with the primary evaluation. The scorer validates one condition at a time and treats `--reference-host` as a declared label; the orchestrator and frozen-manifest audit must enforce consistency across all four conditions. CI runs deterministic script and scorer tests only; it does not run agent-model evaluations or produce an efficacy percentage. See [`evaluation-protocol.md`](evals/evaluation-protocol.md) for the format and statistical limits.
 
@@ -237,8 +241,8 @@ The public cases are a development set. Passing them does not mean the problem i
 │   ├── evaluation-prompts.jsonl
 │   ├── evaluation-protocol.md
 │   └── score_eval.py
-├── no-negative-echo/
-│   ├── .no-negative-echo-provenance.json
+├── delivery-gate/
+│   ├── .delivery-gate-provenance.json
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── assets/
@@ -266,4 +270,4 @@ This project is released under the [MIT License](LICENSE). Commercial use, modif
 
 ## Feedback
 
-If you find another no-negative-echo result, open an issue with the original request, actual output, expected output, and affected surface. Also note whether the skill was invoked explicitly or loaded implicitly. Replace real credentials, personal information, and internal project names before submitting.
+If you find another delivery-gate result, open an issue with the original request, actual output, expected output, and affected surface. Also note whether the skill was invoked explicitly or loaded implicitly. Replace real credentials, personal information, and internal project names before submitting.

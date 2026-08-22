@@ -35,7 +35,7 @@ Run fresh sessions under all conditions on the declared reference host:
 
 - `no-skill`: the Skill is absent;
 - `comparator`: inject the exact frozen text in [`comparator.txt`](comparator.txt), with no Skill metadata;
-- `explicit`: explicitly invoke `no-negative-echo` using the reference host's documented syntax, and freeze that exact invocation in the manifest;
+- `explicit`: explicitly invoke `delivery-gate` using the reference host's documented syntax, and freeze that exact invocation in the manifest;
 - `implicit`: install the Skill but do not name it in the user turn.
 
 Do not tune the comparator after inspecting results. Because a host can expose Skill name and description before loading the full instructions, add a metadata-only diagnostic when attributing the mechanism. It is outside the scorer's four primary conditions: report it descriptively and do not relabel or pool it with `no-skill`, `comparator`, `explicit`, or `implicit`. Randomize condition order and pair seeds when the host permits it.

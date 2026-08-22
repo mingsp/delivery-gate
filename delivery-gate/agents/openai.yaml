@@ -1,0 +1,10 @@
+interface:
+  display_name: "交付门禁"
+  short_description: "根据最终状态检查标题、代码、提交、PR 与交付说明"
+  icon_small: "./assets/icon-400.png"
+  icon_large: "./assets/icon.png"
+  brand_color: "#C96F32"
+  default_prompt: "使用 $delivery-gate 根据最终状态验收并整理这次交付的全部用户可见表面。"
+
+policy:
+  allow_implicit_invocation: true

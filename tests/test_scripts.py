@@ -13,7 +13,7 @@ import unittest
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPOSITORY_ROOT / "no-negative-echo" / "scripts"))
+sys.path.insert(0, str(REPOSITORY_ROOT / "delivery-gate" / "scripts"))
 sys.path.insert(0, str(REPOSITORY_ROOT / "evals"))
 
 from check_surface import count_matches, normalize  # noqa: E402
@@ -247,11 +247,45 @@ class EvaluationScoringTests(unittest.TestCase):
 
 
 class InstallerTests(unittest.TestCase):
+    def test_installed_skill_uses_chinese_delivery_gate_identity(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            skills_dir = Path(temp_dir) / "skills"
+            source = REPOSITORY_ROOT / "delivery-gate"
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-I",
+                    str(REPOSITORY_ROOT / "scripts" / "install_skill.py"),
+                    "--source",
+                    str(source),
+                    "--skills-dir",
+                    str(skills_dir),
+                    "--discovery-root",
+                    str(skills_dir),
+                ],
+                capture_output=True,
+                check=False,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            target = skills_dir / "delivery-gate"
+            skill_text = (target / "SKILL.md").read_text(encoding="utf-8")
+            metadata = (target / "agents" / "openai.yaml").read_text(
+                encoding="utf-8"
+            )
+
+            self.assertIn("name: delivery-gate", skill_text)
+            self.assertIn("交付验收一下", skill_text)
+            self.assertIn('display_name: "交付门禁"', metadata)
+            self.assertIn("$delivery-gate", metadata)
+            self.assertFalse((skills_dir / "no-negative-echo").exists())
+
     def test_installer_replaces_a_valid_existing_runtime(self) -> None:
         with TemporaryDirectory() as temp_dir:
             skills_dir = Path(temp_dir) / "skills"
-            old_target = skills_dir / "no-negative-echo"
-            shutil.copytree(REPOSITORY_ROOT / "no-negative-echo", old_target)
+            old_target = skills_dir / "delivery-gate"
+            shutil.copytree(REPOSITORY_ROOT / "delivery-gate", old_target)
             ignored_cache = old_target / "scripts" / "__pycache__" / "stale.pyc"
             ignored_cache.parent.mkdir(exist_ok=True)
             ignored_cache.write_bytes(b"stale")
@@ -286,7 +320,7 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue(coordination_lock.is_file())
             self.assertFalse(ignored_cache.exists())
             self.assertTrue(
-                (old_target / ".no-negative-echo-provenance.json").is_file()
+                (old_target / ".delivery-gate-provenance.json").is_file()
             )
             self.assertTrue((old_target / "SKILL.md").is_file())
             self.assertTrue((old_target / "agents" / "openai.yaml").is_file())
@@ -300,10 +334,10 @@ class InstallerTests(unittest.TestCase):
 class FixtureContractTests(unittest.TestCase):
     def test_runtime_hash_inputs_are_forced_to_lf_by_git(self) -> None:
         paths = [
-            "no-negative-echo/.no-negative-echo-provenance.json",
-            "no-negative-echo/SKILL.md",
-            "no-negative-echo/agents/openai.yaml",
-            "no-negative-echo/scripts/check_surface.py",
+            "delivery-gate/.delivery-gate-provenance.json",
+            "delivery-gate/SKILL.md",
+            "delivery-gate/agents/openai.yaml",
+            "delivery-gate/scripts/check_surface.py",
             "scripts/install_skill.py",
             "INSTALL.md",
         ]
@@ -341,7 +375,7 @@ class FixtureContractTests(unittest.TestCase):
 
     def test_published_provenance_digest_matches_install_docs(self) -> None:
         marker = (
-            REPOSITORY_ROOT / "no-negative-echo" / ".no-negative-echo-provenance.json"
+            REPOSITORY_ROOT / "delivery-gate" / ".delivery-gate-provenance.json"
         )
         digest = hashlib.sha256(marker.read_bytes()).hexdigest()
         for relative in ("INSTALL.md", "README.md", "README_EN.md"):
@@ -350,7 +384,7 @@ class FixtureContractTests(unittest.TestCase):
                 self.assertIn(digest, contents)
 
     def test_interface_icon_assets_are_valid(self) -> None:
-        skill_root = REPOSITORY_ROOT / "no-negative-echo"
+        skill_root = REPOSITORY_ROOT / "delivery-gate"
         metadata = (skill_root / "agents" / "openai.yaml").read_text(encoding="utf-8")
 
         for filename, expected_dimensions in {
@@ -370,7 +404,7 @@ class FixtureContractTests(unittest.TestCase):
         self.assertIn('icon_large: "./assets/icon.png"', metadata)
 
     def test_installable_skill_excludes_evaluation_harness(self) -> None:
-        skill_root = REPOSITORY_ROOT / "no-negative-echo"
+        skill_root = REPOSITORY_ROOT / "delivery-gate"
         forbidden_names = {
             "evaluation-oracle.jsonl",
             "evaluation-prompts.jsonl",

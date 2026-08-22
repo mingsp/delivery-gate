@@ -12,7 +12,7 @@ import sys
 from typing import Any, Literal
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "no-negative-echo" / "scripts"))
+sys.path.insert(0, str(ROOT / "delivery-gate" / "scripts"))
 from check_surface import normalize  # noqa: E402
 
 Condition = Literal["no-skill", "comparator", "explicit", "implicit"]
@@ -220,7 +220,7 @@ def case_sha256(prompt: dict[str, Any], oracle: dict[str, Any]) -> str:
     validate_prompt(prompt)
     validate_oracle(oracle)
     payload = {
-        "schema": "no-negative-echo-case-v1",
+        "schema": "delivery-gate-case-v1",
         "prompt": prompt,
         "oracle": oracle,
     }

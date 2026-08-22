@@ -70,7 +70,7 @@ def make_source(root: Path) -> Path:
     for directory in ("agents", "assets", "scripts"):
         (source / directory).mkdir(parents=True, exist_ok=True)
     (source / "SKILL.md").write_text(
-        "---\nname: no-negative-echo\n---\n", encoding="utf-8"
+        "---\nname: delivery-gate\n---\n", encoding="utf-8"
     )
     (source / "agents" / "openai.yaml").write_text("name: test\n", encoding="utf-8")
     for filename in ("decision-boundary.png", "icon-400.png", "icon.png"):
@@ -95,7 +95,7 @@ def git_history_available(commit: str) -> bool:
 def make_official_legacy_runtime(
     root: Path, commit: str, *, crlf_checkout: bool = False
 ) -> Path:
-    target = root / "skills" / "no-negative-echo"
+    target = root / "skills" / "delivery-gate"
     for relative in installer_module.LEGACY_OFFICIAL_MANIFESTS[commit]:
         destination = target / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -269,7 +269,7 @@ class HardenedInstallerTests(unittest.TestCase):
             self.assertFalse((root / "skills").exists())
 
     def test_current_runtime_marker_is_an_embedded_official_identity(self) -> None:
-        marker = REPOSITORY_ROOT / "no-negative-echo" / installer_module.PROVENANCE_FILE
+        marker = REPOSITORY_ROOT / "delivery-gate" / installer_module.PROVENANCE_FILE
         digest = hashlib.sha256(marker.read_bytes()).hexdigest()
         payload = json.loads(marker.read_text(encoding="utf-8"))
         expected_files = {
@@ -365,7 +365,7 @@ class HardenedInstallerTests(unittest.TestCase):
                     mock.patch("builtins.print"),
                 ):
                     self.assertEqual(installer_module.main(), 0)
-                target = skills_dir / "no-negative-echo"
+                target = skills_dir / "delivery-gate"
                 self.assertTrue((target / "SKILL.md").is_file())
                 self.assertTrue((target / "scripts" / "check_surface.py").is_file())
 
@@ -385,7 +385,7 @@ class HardenedInstallerTests(unittest.TestCase):
             ):
                 self.assertEqual(installer_module.main(), 0)
 
-            target = home / ".agents" / "skills" / "no-negative-echo"
+            target = home / ".agents" / "skills" / "delivery-gate"
             self.assertTrue((target / "SKILL.md").is_file())
             self.assertFalse(
                 any(
@@ -400,7 +400,7 @@ class HardenedInstallerTests(unittest.TestCase):
             home = root / "home"
             home.mkdir()
             source = make_source(root)
-            legacy_target = home / ".codex" / "skills" / "no-negative-echo"
+            legacy_target = home / ".codex" / "skills" / "delivery-gate"
             shutil.copytree(source, legacy_target)
             arguments = ["install_skill.py", "--source", str(source)]
 
@@ -414,7 +414,7 @@ class HardenedInstallerTests(unittest.TestCase):
 
             self.assertTrue((legacy_target / "SKILL.md").is_file())
             self.assertFalse(
-                (home / ".agents" / "skills" / "no-negative-echo").exists()
+                (home / ".agents" / "skills" / "delivery-gate").exists()
             )
             self.assertTrue(
                 any(
@@ -428,7 +428,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             home = root / "home"
             source = make_source(root)
-            current_target = home / ".agents" / "skills" / "no-negative-echo"
+            current_target = home / ".agents" / "skills" / "delivery-gate"
             shutil.copytree(source, current_target)
             arguments = ["install_skill.py", "--source", str(source)]
 
@@ -441,7 +441,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 self.assertEqual(installer_module.main(), 0)
 
             self.assertTrue((current_target / "SKILL.md").is_file())
-            self.assertFalse((home / ".codex" / "skills" / "no-negative-echo").exists())
+            self.assertFalse((home / ".codex" / "skills" / "delivery-gate").exists())
 
     def test_codex_presets_refuse_a_second_cross_location_install(self) -> None:
         for agent in ("codex", "shared"):
@@ -449,7 +449,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 root = Path(temp)
                 home = root / "home"
                 source = make_source(root)
-                legacy_target = home / ".codex" / "skills" / "no-negative-echo"
+                legacy_target = home / ".codex" / "skills" / "delivery-gate"
                 shutil.copytree(source, legacy_target)
                 marker = legacy_target / ".DS_Store"
                 marker.write_text("preserve", encoding="utf-8")
@@ -471,7 +471,7 @@ class HardenedInstallerTests(unittest.TestCase):
 
                 self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
                 self.assertFalse(
-                    (home / ".agents" / "skills" / "no-negative-echo").exists()
+                    (home / ".agents" / "skills" / "delivery-gate").exists()
                 )
                 self.assertTrue(
                     any(
@@ -485,7 +485,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             home = root / "home"
             source = make_source(root)
-            current_target = home / ".agents" / "skills" / "no-negative-echo"
+            current_target = home / ".agents" / "skills" / "delivery-gate"
             shutil.copytree(source, current_target)
             marker = current_target / ".DS_Store"
             marker.write_text("preserve", encoding="utf-8")
@@ -506,7 +506,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 self.assertEqual(installer_module.main(), 1)
 
             self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
-            self.assertFalse((home / ".codex" / "skills" / "no-negative-echo").exists())
+            self.assertFalse((home / ".codex" / "skills" / "delivery-gate").exists())
             self.assertTrue(
                 any(
                     "second Codex install" in str(call)
@@ -520,7 +520,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 root = Path(temp)
                 home = root / "home"
                 source = make_source(root)
-                shared_target = home / ".agents" / "skills" / "no-negative-echo"
+                shared_target = home / ".agents" / "skills" / "delivery-gate"
                 shutil.copytree(source, shared_target)
                 marker = shared_target / ".DS_Store"
                 marker.write_text("preserve", encoding="utf-8")
@@ -540,7 +540,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 ):
                     self.assertEqual(installer_module.main(), 1)
 
-                native_target = home / f".{agent}" / "skills" / "no-negative-echo"
+                native_target = home / f".{agent}" / "skills" / "delivery-gate"
                 self.assertFalse(native_target.exists())
                 self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
                 self.assertTrue(
@@ -552,8 +552,8 @@ class HardenedInstallerTests(unittest.TestCase):
 
     def test_cursor_preset_refuses_its_compatible_personal_roots(self) -> None:
         for existing_relative in (
-            Path(".claude/skills/no-negative-echo"),
-            Path(".codex/skills/no-negative-echo"),
+            Path(".claude/skills/delivery-gate"),
+            Path(".codex/skills/delivery-gate"),
         ):
             with (
                 self.subTest(existing_relative=existing_relative),
@@ -582,7 +582,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 ):
                     self.assertEqual(installer_module.main(), 1)
 
-                cursor_target = home / ".cursor" / "skills" / "no-negative-echo"
+                cursor_target = home / ".cursor" / "skills" / "delivery-gate"
                 self.assertFalse(cursor_target.exists())
                 self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
                 self.assertTrue(
@@ -598,7 +598,7 @@ class HardenedInstallerTests(unittest.TestCase):
             home = root / "home"
             codex_home = root / "custom-codex"
             source = make_source(root)
-            legacy_target = codex_home / "skills" / "no-negative-echo"
+            legacy_target = codex_home / "skills" / "delivery-gate"
             shutil.copytree(source, legacy_target)
             marker = legacy_target / ".DS_Store"
             marker.write_text("preserve", encoding="utf-8")
@@ -621,7 +621,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 self.assertEqual(installer_module.main(), 1)
 
             self.assertFalse(
-                (home / ".cursor" / "skills" / "no-negative-echo").exists()
+                (home / ".cursor" / "skills" / "delivery-gate").exists()
             )
             self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
 
@@ -636,7 +636,7 @@ class HardenedInstallerTests(unittest.TestCase):
                     home = root / "home"
                     source = make_source(root)
                     native_target = (
-                        home / f".{native_agent}" / "skills" / "no-negative-echo"
+                        home / f".{native_agent}" / "skills" / "delivery-gate"
                     )
                     shutil.copytree(source, native_target)
                     marker = native_target / ".DS_Store"
@@ -653,7 +653,7 @@ class HardenedInstallerTests(unittest.TestCase):
                     ):
                         self.assertEqual(installer_module.main(), 1)
 
-                    shared_target = home / ".agents" / "skills" / "no-negative-echo"
+                    shared_target = home / ".agents" / "skills" / "delivery-gate"
                     self.assertFalse(shared_target.exists())
                     self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
 
@@ -662,7 +662,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             home = root / "home"
             source = make_source(root)
-            shared_target = home / ".agents" / "skills" / "no-negative-echo"
+            shared_target = home / ".agents" / "skills" / "delivery-gate"
             shutil.copytree(source, shared_target)
             real_lstat = installer_module._lstat
 
@@ -690,7 +690,7 @@ class HardenedInstallerTests(unittest.TestCase):
             ):
                 self.assertEqual(installer_module.main(), 0)
 
-            claude_target = home / ".claude" / "skills" / "no-negative-echo"
+            claude_target = home / ".claude" / "skills" / "delivery-gate"
             self.assertTrue((shared_target / "SKILL.md").is_file())
             self.assertTrue((claude_target / "SKILL.md").is_file())
 
@@ -699,8 +699,8 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             home = root / "home"
             source = make_source(root)
-            current_target = home / ".agents" / "skills" / "no-negative-echo"
-            legacy_target = home / ".codex" / "skills" / "no-negative-echo"
+            current_target = home / ".agents" / "skills" / "delivery-gate"
+            legacy_target = home / ".codex" / "skills" / "delivery-gate"
             shutil.copytree(source, current_target)
             shutil.copytree(source, legacy_target)
             current_marker = current_target / ".DS_Store"
@@ -727,8 +727,8 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             home = root / "home"
             source = make_source(root)
-            current_target = home / ".agents" / "skills" / "no-negative-echo"
-            legacy_target = home / ".codex" / "skills" / "no-negative-echo"
+            current_target = home / ".agents" / "skills" / "delivery-gate"
+            legacy_target = home / ".codex" / "skills" / "delivery-gate"
             shutil.copytree(source, current_target)
             marker = current_target / ".DS_Store"
             marker.write_text("preserve", encoding="utf-8")
@@ -753,10 +753,10 @@ class HardenedInstallerTests(unittest.TestCase):
 
     def test_cursor_preset_refuses_nested_compatible_skill(self) -> None:
         for nested_relative in (
-            Path(".cursor/skills/team/no-negative-echo"),
-            Path(".agents/skills/team/no-negative-echo"),
-            Path(".claude/skills/team/no-negative-echo"),
-            Path(".codex/skills/team/no-negative-echo"),
+            Path(".cursor/skills/team/delivery-gate"),
+            Path(".agents/skills/team/delivery-gate"),
+            Path(".claude/skills/team/delivery-gate"),
+            Path(".codex/skills/team/delivery-gate"),
         ):
             with (
                 self.subTest(nested_relative=nested_relative),
@@ -785,7 +785,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 ):
                     self.assertEqual(installer_module.main(), 1)
 
-                selected = home / ".cursor" / "skills" / "no-negative-echo"
+                selected = home / ".cursor" / "skills" / "delivery-gate"
                 self.assertFalse(selected.exists())
                 self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
 
@@ -796,7 +796,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 home = root / "home"
                 source = make_source(root)
                 nested_target = (
-                    home / ".cursor" / "skills" / "team" / "no-negative-echo"
+                    home / ".cursor" / "skills" / "team" / "delivery-gate"
                 )
                 shutil.copytree(source, nested_target)
                 marker = nested_target / ".DS_Store"
@@ -813,7 +813,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 ):
                     self.assertEqual(installer_module.main(), 1)
 
-                selected = home / ".agents" / "skills" / "no-negative-echo"
+                selected = home / ".agents" / "skills" / "delivery-gate"
                 self.assertFalse(selected.exists())
                 self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
 
@@ -822,7 +822,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             home = root / "home"
             source = make_source(root)
-            nested_target = home / ".claude" / "skills" / "synced" / "no-negative-echo"
+            nested_target = home / ".claude" / "skills" / "synced" / "delivery-gate"
             shutil.copytree(source, nested_target)
             marker = nested_target / ".DS_Store"
             marker.write_text("preserve", encoding="utf-8")
@@ -842,7 +842,7 @@ class HardenedInstallerTests(unittest.TestCase):
             ):
                 self.assertEqual(installer_module.main(), 1)
 
-            selected = home / ".claude" / "skills" / "no-negative-echo"
+            selected = home / ".claude" / "skills" / "delivery-gate"
             self.assertFalse(selected.exists())
             self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
 
@@ -866,7 +866,7 @@ class HardenedInstallerTests(unittest.TestCase):
             ):
                 self.assertEqual(installer_module.main(), 0)
 
-            self.assertTrue((custom / "no-negative-echo" / "SKILL.md").is_file())
+            self.assertTrue((custom / "delivery-gate" / "SKILL.md").is_file())
 
     def test_explicit_skills_dir_requires_absolute_path_and_discovery_roots(
         self,
@@ -901,7 +901,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             source = make_source(root)
             workspace = root / "workspace"
-            existing = workspace / ".agents" / "skills" / "no-negative-echo"
+            existing = workspace / ".agents" / "skills" / "delivery-gate"
             shutil.copytree(source, existing)
             custom = workspace / ".github" / "skills"
             arguments = [
@@ -920,7 +920,7 @@ class HardenedInstallerTests(unittest.TestCase):
             ):
                 self.assertEqual(installer_module.main(), 1)
 
-            self.assertFalse((custom / "no-negative-echo").exists())
+            self.assertFalse((custom / "delivery-gate").exists())
             self.assertTrue((existing / "SKILL.md").is_file())
 
     def test_declared_workspace_root_blocks_preset_duplicate(self) -> None:
@@ -930,7 +930,7 @@ class HardenedInstallerTests(unittest.TestCase):
             home.mkdir()
             source = make_source(root)
             workspace = root / "workspace"
-            existing = workspace / ".agents" / "skills" / "no-negative-echo"
+            existing = workspace / ".agents" / "skills" / "delivery-gate"
             shutil.copytree(source, existing)
             arguments = [
                 "install_skill.py",
@@ -950,7 +950,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 self.assertEqual(installer_module.main(), 1)
 
             self.assertFalse(
-                (home / ".agents" / "skills" / "no-negative-echo").exists()
+                (home / ".agents" / "skills" / "delivery-gate").exists()
             )
             self.assertTrue((existing / "SKILL.md").is_file())
 
@@ -976,7 +976,7 @@ class HardenedInstallerTests(unittest.TestCase):
     def test_python_entrypoints_remain_directly_executable(self) -> None:
         with TemporaryDirectory() as temp:
             target = install_skill(
-                REPOSITORY_ROOT / "no-negative-echo", Path(temp) / "skills"
+                REPOSITORY_ROOT / "delivery-gate", Path(temp) / "skills"
             )
             entrypoints = [
                 REPOSITORY_ROOT / "evals" / "score_eval.py",
@@ -1021,7 +1021,7 @@ class HardenedInstallerTests(unittest.TestCase):
             skills_dir.mkdir()
             outside = root / "outside.lock"
             outside.write_bytes(b"preserve")
-            lock = skills_dir / ".no-negative-echo-install.lock"
+            lock = skills_dir / ".delivery-gate-install.lock"
             try:
                 lock.symlink_to(outside)
             except OSError as exc:
@@ -1032,7 +1032,7 @@ class HardenedInstallerTests(unittest.TestCase):
 
             self.assertEqual(outside.read_bytes(), b"preserve")
             self.assertTrue(lock.is_symlink())
-            self.assertFalse((skills_dir / "no-negative-echo").exists())
+            self.assertFalse((skills_dir / "delivery-gate").exists())
 
     def test_rejects_dangling_symlinked_lock_without_creating_its_target(self) -> None:
         with TemporaryDirectory() as temp:
@@ -1041,7 +1041,7 @@ class HardenedInstallerTests(unittest.TestCase):
             skills_dir = root / "skills"
             skills_dir.mkdir()
             outside = root / "missing-outside.lock"
-            lock = skills_dir / ".no-negative-echo-install.lock"
+            lock = skills_dir / ".delivery-gate-install.lock"
             try:
                 lock.symlink_to(outside)
             except OSError as exc:
@@ -1052,7 +1052,7 @@ class HardenedInstallerTests(unittest.TestCase):
 
             self.assertFalse(outside.exists())
             self.assertTrue(lock.is_symlink())
-            self.assertFalse((skills_dir / "no-negative-echo").exists())
+            self.assertFalse((skills_dir / "delivery-gate").exists())
 
     def test_migrates_legacy_empty_installation_lock(self) -> None:
         with TemporaryDirectory() as temp:
@@ -1060,7 +1060,7 @@ class HardenedInstallerTests(unittest.TestCase):
             source = make_source(root)
             skills_dir = root / "skills"
             skills_dir.mkdir()
-            lock = skills_dir / ".no-negative-echo-install.lock"
+            lock = skills_dir / ".delivery-gate-install.lock"
             lock.write_bytes(b"")
 
             target = install_skill(source, skills_dir)
@@ -1075,7 +1075,7 @@ class HardenedInstallerTests(unittest.TestCase):
             source = make_source(root)
             skills_dir = root / "skills"
             skills_dir.mkdir()
-            lock = skills_dir / ".no-negative-echo-install.lock"
+            lock = skills_dir / ".delivery-gate-install.lock"
             lock.write_bytes(installer_module.LOCK_MAGIC)
             lock.chmod(0o666)
 
@@ -1083,7 +1083,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 install_skill(source, skills_dir)
 
             self.assertEqual(lock.read_bytes(), installer_module.LOCK_MAGIC)
-            self.assertFalse((skills_dir / "no-negative-echo").exists())
+            self.assertFalse((skills_dir / "delivery-gate").exists())
 
     @unittest.skipIf(
         sys.platform == "win32", "Windows prevents renaming an open lock file"
@@ -1094,7 +1094,7 @@ class HardenedInstallerTests(unittest.TestCase):
             source = make_source(root)
             skills_dir = root / "skills"
             skills_dir.mkdir()
-            lock = skills_dir / ".no-negative-echo-install.lock"
+            lock = skills_dir / ".delivery-gate-install.lock"
             displaced = root / "displaced.lock"
             real_lock = installer_module._lock_file
 
@@ -1113,7 +1113,7 @@ class HardenedInstallerTests(unittest.TestCase):
 
             self.assertEqual(displaced.read_bytes(), installer_module.LOCK_MAGIC)
             self.assertEqual(lock.read_bytes(), installer_module.LOCK_MAGIC)
-            self.assertFalse((skills_dir / "no-negative-echo").exists())
+            self.assertFalse((skills_dir / "delivery-gate").exists())
 
     def test_coordination_lock_path_does_not_follow_tmpdir(self) -> None:
         with TemporaryDirectory() as first, TemporaryDirectory() as second:
@@ -1127,7 +1127,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 self.assertEqual(first_path.parent, Path("/tmp"))
 
     def test_rejects_nested_yaml_name_in_source_and_destination(self) -> None:
-        forged_frontmatter = "---\ndescription: |\n  name: no-negative-echo\n---\n"
+        forged_frontmatter = "---\ndescription: |\n  name: delivery-gate\n---\n"
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
@@ -1138,7 +1138,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             target.mkdir(parents=True)
             (target / "SKILL.md").write_text(forged_frontmatter, encoding="utf-8")
             valuable = target / "valuable.bin"
@@ -1153,7 +1153,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             old_metadata = target / "agents" / "openai.yaml"
             old_metadata.write_text("name: old\n", encoding="utf-8")
@@ -1180,7 +1180,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             valuable = target / "valuable.bin"
             valuable.write_bytes(b"preserve")
@@ -1199,7 +1199,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             skill_file = target / "SKILL.md"
             skill_file.write_text(
@@ -1217,7 +1217,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             custom_file = target / "SKILL.md"
             custom_file.write_text(
@@ -1241,7 +1241,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             valuable = target / "scripts" / "__pycache__" / "notes.txt"
             valuable.parent.mkdir()
@@ -1257,7 +1257,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             outside = root / "outside.bin"
             outside.write_bytes(b"preserve")
@@ -1281,7 +1281,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             source = make_source(root)
             skills_dir = root / "skills"
-            target = skills_dir / "no-negative-echo"
+            target = skills_dir / "delivery-gate"
             shutil.copytree(source, target)
             old_metadata = target / "agents" / "openai.yaml"
             old_metadata.write_text("name: old\n", encoding="utf-8")
@@ -1290,7 +1290,7 @@ class HardenedInstallerTests(unittest.TestCase):
 
             def tamper_after_backup_rename(path: Path, destination: Path) -> Path:
                 result = real_rename(path, destination)
-                if path.name == "no-negative-echo" and "-backup-" in destination.name:
+                if path.name == "delivery-gate" and "-backup-" in destination.name:
                     (destination / "valuable.bin").write_bytes(b"preserve")
                 return result
 
@@ -1313,7 +1313,7 @@ class HardenedInstallerTests(unittest.TestCase):
             def tamper_before_yield(directory: Path) -> object:
                 with real_installation_lock(directory):
                     staged = next(
-                        directory.parent.glob(".no-negative-echo-install-*/staged")
+                        directory.parent.glob(".delivery-gate-install-*/staged")
                     )
                     (staged / "scripts" / "check_surface.py").write_text(
                         "tampered\n", encoding="utf-8"
@@ -1328,14 +1328,14 @@ class HardenedInstallerTests(unittest.TestCase):
                 with self.assertRaises(InstallValidationError):
                     install_skill(source, skills_dir)
 
-            self.assertFalse((skills_dir / "no-negative-echo").exists())
+            self.assertFalse((skills_dir / "delivery-gate").exists())
 
     def test_post_rename_inspection_failure_is_activation_uncertain(self) -> None:
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
             skills_dir = root / "skills"
-            target = skills_dir.resolve() / "no-negative-echo"
+            target = skills_dir.resolve() / "delivery-gate"
             real_rename = Path.rename
             real_lstat = installer_module._lstat
             target_renamed = False
@@ -1376,7 +1376,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             old_metadata = target / "agents" / "openai.yaml"
             old_metadata.write_text("name: old\n", encoding="utf-8")
@@ -1398,7 +1398,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             real_rename = Path.rename
 
@@ -1416,7 +1416,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             shutil.copytree(source, target)
             old_metadata = target / "agents" / "openai.yaml"
             old_metadata.write_text("name: old\n", encoding="utf-8")
@@ -1451,7 +1451,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             source = make_source(root)
             skills_dir = root / "skills"
-            target = skills_dir / "no-negative-echo"
+            target = skills_dir / "delivery-gate"
             shutil.copytree(source, target)
             (target / "agents" / "openai.yaml").write_text(
                 "name: old\n", encoding="utf-8"
@@ -1493,12 +1493,12 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             notices: list[str] = []
             real_rmdir = Path.rmdir
 
             def fail_staging_rmdir(path: Path) -> None:
-                if path.name.startswith(".no-negative-echo-install-"):
+                if path.name.startswith(".delivery-gate-install-"):
                     raise PermissionError("staging directory is locked")
                 real_rmdir(path)
 
@@ -1510,14 +1510,14 @@ class HardenedInstallerTests(unittest.TestCase):
             self.assertTrue(os.path.samefile(installed, target))
             self.assertEqual(len(notices), 1)
             self.assertIn("staging directory was preserved", notices[0])
-            self.assertEqual(len(list(root.glob(".no-negative-echo-install-*"))), 1)
+            self.assertEqual(len(list(root.glob(".delivery-gate-install-*"))), 1)
 
     def test_staging_path_swap_after_activation_deletes_nothing(self) -> None:
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
             skills_dir = root / "skills"
-            target = skills_dir / "no-negative-echo"
+            target = skills_dir / "delivery-gate"
             victim = root / "victim"
             victim.mkdir()
             (victim / "keep.txt").write_text("preserve", encoding="utf-8")
@@ -1527,7 +1527,7 @@ class HardenedInstallerTests(unittest.TestCase):
             real_rename = Path.rename
 
             def swap_before_rmdir(path: Path) -> None:
-                if path.name.startswith(".no-negative-echo-install-"):
+                if path.name.startswith(".delivery-gate-install-"):
                     real_rename(path, saved_staging)
                     real_rename(victim, path)
                 real_rmdir(path)
@@ -1536,7 +1536,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 installed = install_skill(source, skills_dir, cleanup_notices=notices)
 
             self.assertTrue(os.path.samefile(installed, target))
-            swapped_path = next(root.glob(".no-negative-echo-install-*"))
+            swapped_path = next(root.glob(".delivery-gate-install-*"))
             self.assertEqual(
                 (swapped_path / "keep.txt").read_text(encoding="utf-8"),
                 "preserve",
@@ -1552,7 +1552,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             notices: list[str] = []
 
             with mock.patch.object(
@@ -1595,7 +1595,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 result = installer_module.main()
 
             self.assertEqual(result, 0)
-            self.assertTrue((skills_dir / "no-negative-echo" / "SKILL.md").is_file())
+            self.assertTrue((skills_dir / "delivery-gate" / "SKILL.md").is_file())
             self.assertTrue(
                 any(
                     "Install warning" in str(call) for call in print_mock.call_args_list
@@ -1603,7 +1603,7 @@ class HardenedInstallerTests(unittest.TestCase):
             )
             self.assertTrue(
                 any(
-                    "Installed no-negative-echo" in str(call)
+                    "Installed delivery-gate" in str(call)
                     for call in print_mock.call_args_list
                 )
             )
@@ -1661,7 +1661,7 @@ class HardenedInstallerTests(unittest.TestCase):
             root = Path(temp)
             source = make_source(root)
             skills_dir = root / "skills"
-            target = skills_dir / "no-negative-echo"
+            target = skills_dir / "delivery-gate"
             target.mkdir(parents=True)
             (target / "valuable.bin").write_bytes(b"preserve")
             arguments = [
@@ -1681,7 +1681,7 @@ class HardenedInstallerTests(unittest.TestCase):
                 result = installer_module.main()
 
             self.assertEqual(result, 1)
-            staging = list(root.glob(".no-negative-echo-install-*"))
+            staging = list(root.glob(".delivery-gate-install-*"))
             self.assertEqual(len(staging), 1)
             prefix = (
                 "Install warning: failed installation preserved staging data "
@@ -1700,7 +1700,7 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             source = make_source(root)
-            target = root / "skills" / "no-negative-echo"
+            target = root / "skills" / "delivery-gate"
             target.mkdir(parents=True)
             marker = target / "keep"
             marker.write_text("valuable", encoding="utf-8")
@@ -1716,7 +1716,7 @@ class HardenedInstallerTests(unittest.TestCase):
     def test_refuses_installing_source_onto_itself(self) -> None:
         with TemporaryDirectory() as temp:
             root = Path(temp)
-            source = root / "no-negative-echo"
+            source = root / "delivery-gate"
             shutil.copytree(make_source(root), source)
             marker = source / "keep-this-source"
             marker.write_text("source", encoding="utf-8")
@@ -1730,9 +1730,9 @@ class HardenedInstallerTests(unittest.TestCase):
     def test_refuses_case_alias_of_source_on_insensitive_filesystem(self) -> None:
         with TemporaryDirectory() as temp:
             root = Path(temp)
-            source = root / "No-Negative-Echo"
+            source = root / "Delivery-Gate"
             shutil.copytree(make_source(root), source)
-            target_alias = root / "no-negative-echo"
+            target_alias = root / "delivery-gate"
             if not target_alias.exists() or not os.path.samefile(source, target_alias):
                 self.skipTest("filesystem is case-sensitive")
             marker = source / ".DS_Store"
@@ -1747,13 +1747,13 @@ class HardenedInstallerTests(unittest.TestCase):
         with TemporaryDirectory() as temp:
             root = Path(temp)
             template = make_source(root)
-            old_target = root / "No-Negative-Echo"
+            old_target = root / "Delivery-Gate"
             shutil.copytree(template, old_target)
             source = old_target / "nested-source"
             shutil.copytree(template, source)
             valuable = old_target / "valuable.bin"
             valuable.write_bytes(b"preserve")
-            target_alias = root / "no-negative-echo"
+            target_alias = root / "delivery-gate"
             if not target_alias.exists() or not os.path.samefile(
                 old_target, target_alias
             ):
@@ -1769,9 +1769,9 @@ class HardenedInstallerTests(unittest.TestCase):
     def test_refuses_case_aliased_skills_dir_inside_source(self) -> None:
         with TemporaryDirectory() as temp:
             root = Path(temp)
-            source = root / "No-Negative-Echo"
+            source = root / "Delivery-Gate"
             shutil.copytree(make_source(root), source)
-            source_alias = root / "no-negative-echo"
+            source_alias = root / "delivery-gate"
             if not source_alias.exists() or not os.path.samefile(source, source_alias):
                 self.skipTest("filesystem is case-sensitive")
 
@@ -1798,7 +1798,7 @@ class HardenedScannerTests(unittest.TestCase):
         target.write_bytes(surface)
         command = [
             sys.executable,
-            str(REPOSITORY_ROOT / "no-negative-echo" / "scripts" / "check_surface.py"),
+            str(REPOSITORY_ROOT / "delivery-gate" / "scripts" / "check_surface.py"),
             "--terms-file",
             str(terms_path),
         ]
@@ -1867,7 +1867,7 @@ class HardenedScannerTests(unittest.TestCase):
                     sys.executable,
                     str(
                         REPOSITORY_ROOT
-                        / "no-negative-echo"
+                        / "delivery-gate"
                         / "scripts"
                         / "check_surface.py"
                     ),

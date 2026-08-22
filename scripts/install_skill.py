@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the local no-negative-echo runtime package for a supported agent."""
+"""Install the local delivery-gate runtime package for a supported agent."""
 
 from __future__ import annotations
 
@@ -18,13 +18,13 @@ from uuid import uuid4
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SOURCE = REPOSITORY_ROOT / "no-negative-echo"
-SKILL_NAME = "no-negative-echo"
-PROVENANCE_FILE = Path(".no-negative-echo-provenance.json")
-PACKAGE_ID = "io.github.lb623.no-negative-echo"
-SOURCE_REPOSITORY = "https://github.com/LB623/no-negative-echo"
+DEFAULT_SOURCE = REPOSITORY_ROOT / "delivery-gate"
+SKILL_NAME = "delivery-gate"
+PROVENANCE_FILE = Path(".delivery-gate-provenance.json")
+PACKAGE_ID = "io.github.mingsp.delivery-gate"
+SOURCE_REPOSITORY = "https://github.com/mingsp/delivery-gate"
 CURRENT_PROVENANCE_SHA256 = (
-    "9cc10a0f1d2d87f0de8517bf40c59e364783e2410308a0c8f815288f53a7cc47"
+    "ee802f2ced497b6ef841291604cf7e15492f509d9705892a369f147d38ec5a28"
 )
 # Preserve prior published marker digests here when the runtime changes.
 KNOWN_OFFICIAL_PROVENANCE_SHA256 = frozenset({CURRENT_PROVENANCE_SHA256})
@@ -50,8 +50,12 @@ AGENT_SKILLS_DIRS = {
 }
 AGENT_PRESETS = (*AGENT_SKILLS_DIRS, "codex-legacy")
 NATIVE_SHARED_AGENTS = ("cursor", "gemini", "copilot")
-LOCK_MAGIC = b"no-negative-echo-install-lock-v1\n"
+LOCK_MAGIC = b"delivery-gate-install-lock-v1\n"
 LEGACY_TEXT_SUFFIXES = frozenset({".md", ".py", ".svg", ".yaml"})
+# Exact pre-fork packages retain their original frontmatter name. They are
+# recognized only when already located at the selected target and are preserved
+# as a recovery backup before the delivery-gate runtime is activated.
+LEGACY_SKILL_NAMES = frozenset({"no-negative-echo"})
 LEGACY_OFFICIAL_MANIFESTS: dict[str, dict[Path, str]] = {
     "5ba55a4217568e94f22414cb5bbcde4b51c37995": {
         Path(
@@ -299,7 +303,7 @@ def _resolve_cli_skills_dir(
         if conflict is not None:
             raise InstallValidationError(
                 "refusing to create multiple discoverable installs for the "
-                "selected agent: another no-negative-echo target already exists "
+                "selected agent: another delivery-gate target already exists "
                 f"at {conflict}; resolve it manually before installing"
             )
 
@@ -340,7 +344,7 @@ def _resolve_cli_skills_dir(
     legacy_exists = _exists_without_following(legacy_target)
     duplicate_error = (
         "refusing to create a second Codex install across the current and legacy "
-        "locations: another no-negative-echo target already exists; resolve it "
+        "locations: another delivery-gate target already exists; resolve it "
         "manually before installing"
     )
 
@@ -427,7 +431,7 @@ def _check_additional_discovery_roots(
         if conflict is not None:
             raise InstallValidationError(
                 "refusing to create multiple discoverable installs: another "
-                f"no-negative-echo target exists at {conflict}; resolve it "
+                f"delivery-gate target exists at {conflict}; resolve it "
                 "manually before installing"
             )
 
@@ -773,8 +777,10 @@ def _validate_legacy_official_runtime(root: Path, *, allow_ignored: bool) -> str
         allowed_files=allowed_files,
         allowed_directories=allowed_directories,
     )
-    if _read_skill_name(root / "SKILL.md") != SKILL_NAME:
-        raise InstallValidationError(f"SKILL.md name must be exactly {SKILL_NAME!r}")
+    if _read_skill_name(root / "SKILL.md") not in LEGACY_SKILL_NAMES:
+        raise InstallValidationError(
+            "legacy SKILL.md name is not a recognized pre-fork identity"
+        )
 
     candidates = [
         (commit, manifest)

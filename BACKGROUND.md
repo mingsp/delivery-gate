@@ -63,7 +63,7 @@
 
 > So I see it's not just the English world that has this problem
 
-本 skill 的英文名 `no-negative-echo` 对应的就是第 3、第 4 步：负向约束和被淘汰方案，不能在交付物里再响一次。
+本 skill 的英文名 `delivery-gate` 对应的就是第 3、第 4 步：负向约束和被淘汰方案，不能在交付物里再响一次。
 
 ---
 

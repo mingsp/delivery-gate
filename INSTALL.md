@@ -1,7 +1,7 @@
-# no-negative-echo installation contract
+# delivery-gate installation contract
 
 This document is an instruction contract for an AI agent installing
-`no-negative-echo` from <https://github.com/LB623/no-negative-echo>. Follow it
+`delivery-gate` from <https://github.com/mingsp/delivery-gate>. Follow it
 as written. Do not interpret possession of this URL as permission for broader
 machine changes.
 
@@ -10,8 +10,8 @@ machine changes.
 - Limit writes to a temporary clone, narrowly scoped test directories, the
   selected user- or project-level skills directory, and the installer's exact
   coordination/staging/recovery paths described here. On POSIX, the persistent
-  per-user coordination lock is `/tmp/.no-negative-echo-cli-<uid>.lock`; on
-  Windows it is the exact `.no-negative-echo-cli-<home-hash>.lock` path printed
+  per-user coordination lock is `/tmp/.delivery-gate-cli-<uid>.lock`; on
+  Windows it is the exact `.delivery-gate-cli-<home-hash>.lock` path printed
   under the current user's home. This canonical path does not follow `TMPDIR`,
   so cooperating installers cannot split their lock by changing process-local
   temporary-directory variables. Staging and a validated previous-version
@@ -76,6 +76,13 @@ Use `--agent codex-legacy` only when the user explicitly requests the old
 installer can safely reuse a detected old Codex installation, but an explicit
 current-host preset is preferred for a new installation.
 
+Also inspect every verified discovery root for the predecessor name
+`no-negative-echo`. The installer does not treat that differently named path as
+the current target. If it exists, verify it as an unmodified upstream runtime,
+move it to a recoverable backup outside every discovery root, and record the
+exact backup path before installing. Otherwise stop; never leave both names
+discoverable or remove an unknown predecessor directory.
+
 For another host, use `--skills-dir ABSOLUTE_PATH` only after identifying a
 documented local Agent Skills root for that exact host and surface. Never guess
 the directory. `--agent` and `--skills-dir` are mutually exclusive. Copying to
@@ -101,9 +108,9 @@ fallback as installation.
 Before cloning or writing, perform a read-only discovery-collision preflight.
 Enumerate every documented user-level and current-workspace discovery root for
 the detected host, including compatible aliases and documented parent/workspace
-scopes. Check each root for an existing `no-negative-echo` directory. When the
+scopes. Check each root for an existing `delivery-gate` directory. When the
 detected host recursively scans a root or nested workspace scopes, search those
-locations recursively for a parent directory named `no-negative-echo` containing
+locations recursively for a parent directory named `delivery-gate` containing
 `SKILL.md`. If any discoverable copy exists outside the one selected target,
 stop and report every path. Do not delete, merge, overwrite, move, or symlink
 copies—even when they appear byte-identical. A project copy can shadow a user
@@ -120,16 +127,16 @@ second discoverable copy and violates this contract.
 
 1. Create a new, narrowly scoped temporary directory using the platform's safe
    temporary-directory facility.
-2. Clone `https://github.com/LB623/no-negative-echo.git` into that directory.
+2. Clone `https://github.com/mingsp/delivery-gate.git` into that directory.
    Do not reuse an existing clone. If the user supplied a tag or commit, check
    out exactly that ref; otherwise use the fetched default branch.
 3. Record the exact source with `git remote get-url origin` and
    `git rev-parse HEAD`. Confirm `git status --porcelain --untracked-files=all`
    is empty before executing repository code.
-4. Read the root `.gitattributes`, `no-negative-echo/SKILL.md`,
-   `no-negative-echo/.no-negative-echo-provenance.json`, and
+4. Read the root `.gitattributes`, `delivery-gate/SKILL.md`,
+   `delivery-gate/.delivery-gate-provenance.json`, and
    `scripts/install_skill.py`. Inspect the installer's fixed runtime manifest
-   and confirm that its source is the local `no-negative-echo/` directory. Do
+   and confirm that its source is the local `delivery-gate/` directory. Do
    not execute if the source contains unexpected files, symlinks, special
    files, a different Skill name, or a provenance file whose package identity,
    file list, or file hashes do not match the checkout. Confirm the attributes
@@ -149,7 +156,7 @@ second discoverable copy and violates this contract.
    Record the provenance marker's digest separately as
    `REVIEWED_PROVENANCE_SHA256`. For the current installation-contract
    revision, it must be
-   `9cc10a0f1d2d87f0de8517bf40c59e364783e2410308a0c8f815288f53a7cc47`.
+   `ee802f2ced497b6ef841291604cf7e15492f509d9705892a369f147d38ec5a28`.
    If it differs, the contract and checkout are from different revisions or
    the source changed; stop instead of guessing which one to trust.
 
@@ -243,8 +250,8 @@ successful fresh install leaves no staging directory.
 Installation is successful only when all applicable checks below pass:
 
 1. The installer exits with status 0 and prints the exact target directory.
-2. The target is `<selected-skills-root>/no-negative-echo` and contains a
-   regular `SKILL.md` whose top-level `name` is exactly `no-negative-echo`.
+2. The target is `<selected-skills-root>/delivery-gate` and contains a
+   regular `SKILL.md` whose top-level `name` is exactly `delivery-gate`.
 3. The installed regular-file manifest matches the source runtime manifest,
    the installed provenance marker has the exact
    `REVIEWED_PROVENANCE_SHA256`, and every installed file has the SHA-256
@@ -256,7 +263,7 @@ Installation is successful only when all applicable checks below pass:
    ```
 
 5. When the current host exposes a skill list or reload command, reload if
-   supported and verify that `no-negative-echo` is listed. Do not infer
+   supported and verify that `delivery-gate` is listed. Do not infer
    discovery from the directory alone, and do not infer activation or behavior
    from discovery.
 
@@ -284,7 +291,7 @@ Return all of these fields, including failures and unverified items:
 - Host: product, surface, and version/build if observable
 - Selection: preset or custom skills root, with the reason it was chosen
 - Discovery preflight: every documented user/workspace root checked and every
-  existing `no-negative-echo` path found
+  existing `delivery-gate` path found
 - Installed path: exact absolute target, or `none`
 - Source: exact remote URL and full commit hash
 - Tests: command, pass/fail, and test count when reported

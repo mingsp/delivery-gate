@@ -1,11 +1,17 @@
 ---
-name: no-negative-echo
-description: "Reduce negative-constraint and session-history leakage when a discarded proposal or user correction is echoed into final artifacts as a ‘without X’ label, rejected-option explanation, or process residue. Use for 此地无银三百两式 output in prose, code, metadata, and handoffs, including later requests to finish, commit, publish, or open a PR after iterative work; not for ordinary deletion, deprecation, migration, or requirements where the exclusion itself is material."
+name: delivery-gate
+description: "Use when a user says ‘交付门禁’, ‘交付验收一下’, or asks to finalize a commit, PR, release, document, or handoff after iterative work where discarded proposals, corrections, or negative constraints could leak into the deliverable. Not for ordinary deletion, deprecation, migration, or requirements where the exclusion itself is material."
 ---
 
-# No Negative Echo
+# 交付门禁（Delivery Gate）
 
 Describe the accepted result as if the audience never saw the working session. Treat discarded proposals and user corrections as control data, not as the identity of the result.
+
+## 中文调用
+
+Treat “交付验收一下”, “使用交付门禁”, and “检查最终交付” as direct natural-language requests to apply this skill. The native explicit identifier remains `$delivery-gate`; a Chinese phrase can request the same workflow but does not by itself prove that the host activated the skill.
+
+Here, “验收” means checking the final deliverable surfaces against the accepted state and available verification evidence. It does not replace functional, business, deployment, security, or compliance acceptance that the underlying task separately requires.
 
 ## Capability boundary
 
