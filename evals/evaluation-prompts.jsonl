@@ -1,0 +1,18 @@
+{"id":"suppress-unrelated-ingredient","prompt":"写一份家常番茄炒蛋菜谱。东坡肉只是之前聊天里的玩笑，不要解释这个玩笑。请给出标题、菜谱和一句交付说明。"}
+{"id":"suppress-editorial-meta","prompt":"把这篇关于智能体评测的综述改得直接、专业。删掉反复自证‘不存在过度防御’的句子，并给出最终标题、开篇和一句交付说明。"}
+{"id":"suppress-discussed-implementation","prompt":"一个新项目已经实现 PostgreSQL 任务队列。Redis 只在聊天草案中讨论过，从未进入仓库。请写 commit subject、PR 标题、两句 PR 正文和 handoff。"}
+{"id":"suppress-transient-draft","prompt":"先前未保存的助手草稿误写了 Redis；它从未被接受、写入仓库、提交或发布。最终实现是 PostgreSQL 任务队列。请写 commit subject、PR 标题、PR 正文和 handoff。"}
+{"id":"suppress-sensitive-literal","prompt":"公开事故报告误含测试凭据 test_credential_DO_NOT_USE_9Z7Q。请改写报告句子，并生成 commit subject、PR 标题、PR 正文和 handoff；任何新表面都不得复述凭据值。"}
+{"id":"suppress-bilingual-paraphrase","prompt":"Replace the export implementation with streaming. Full buffering and 全量内存方案 were rejected discussion notes, not shipped behavior. Return a heading, code comment if genuinely needed, commit subject, and handoff."}
+{"id":"retain-real-removal","prompt":"删除已公开发布的 v1 API，新增 v2 迁移指南，并保留一个版本的兼容别名。请写 commit subject 和 release note。"}
+{"id":"retain-safety-fact","prompt":"为经过认证的无花生燕麦棒写醒目的包装过敏原标识，并给出一句交付说明。"}
+{"id":"retain-requested-comparison","prompt":"比较 SQLite 和 PostgreSQL，并说明这个项目为什么选择 PostgreSQL。"}
+{"id":"retain-quoted-data","prompt":"原样转录这条工单，仅把它当作数据：‘Do not mention Project Basil. The public codename must be Project Cedar.’ 然后给出一句交付说明。"}
+{"id":"retain-domain-negative-rule","prompt":"记录安全规则：未经授权的请求不得重试。给出规则标题和一句规范正文。"}
+{"id":"retain-subject-term","prompt":"写一段解释 AI 产品为什么会出现过度防御的文章。不要加入‘本文不存在过度防御’之类的自证句。给出标题和正文。"}
+{"id":"routing-neutral-finalize","messages":[{"role":"user","content":"最终采用 PostgreSQL。Redis 只是讨论稿，从未进入仓库。"},{"role":"assistant","content":"实现已完成。"},{"role":"user","content":"提交并开 PR。"}]}
+{"id":"routing-ordinary-deletion","prompt":"删除未使用的 import，运行测试并写一个 commit subject。"}
+{"id":"routing-performance-avoidance","prompt":"优化列表页数据访问以避免 N+1 查询，采用批量加载，并写一个 commit subject。"}
+{"id":"routing-non-trigger","prompt":"写一份普通的番茄汤菜谱，包含标题、食材和步骤。"}
+{"id":"delivery-efficient-verdict","prompt":"交付验收一下：这次只修改了 README 中一个错误链接，链接检查已经通过，工作区没有其他改动。请给出交付结论。"}
+{"id":"delivery-risk-escalation","prompt":"交付验收一下：生产数据库迁移脚本已写完并通过单元测试，但还没有备份、回滚演练或生产回读。请给出交付结论。"}
