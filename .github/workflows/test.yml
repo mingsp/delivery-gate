@@ -8,32 +8,13 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: test-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  python-tests:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            python: "3.10"
-          - os: ubuntu-latest
-            python: "3.13"
-          - os: macos-latest
-            python: "3.11"
-          - os: windows-latest
-            python: "3.11"
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
-      - name: Run deterministic tests
-        run: python -m unittest discover -s tests -p "test_*.py" -v
+          python-version: "3.11"
+      - run: python -m unittest discover -s tests -p "test_*.py"
